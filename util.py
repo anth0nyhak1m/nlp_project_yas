@@ -9,6 +9,10 @@ stop = stopwords.words('english')
 #import to do word stemming
 from nltk.stem.snowball import EnglishStemmer
 
+#imports to do wordcloud visualization of features 
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+
 
 def cleaning_data(true_df_path, fake_df_path):
     """
@@ -59,3 +63,18 @@ def stemming(pd_series):
     processed_series = pd_series.apply(lambda words: ' '.join(stemmer.stem(word) for word in words.split()))
 
     return processed_series
+
+
+def wordcloud(series_of_strings, max_words): 
+    """
+    Visulalizes pandas series as a cloud of words.
+
+    Returns: plot
+    """
+    word_cloud = WordCloud(collocations = False, background_color = 'white',\
+                max_words = max_words, max_font_size = 100, width = 800,\
+                height = 400).generate(str(series_of_strings))
+    
+    plt.imshow(word_cloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
