@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 
-def cleaning_data(true_df_path, fake_df_path):
+def cleaning_data(true_df_path, fake_df_path, attribute_to_use, bert = True):
     """
     Helper function to pre-process data (lower case, remove article source, removal of punctation & stop words).
 
@@ -25,27 +25,33 @@ def cleaning_data(true_df_path, fake_df_path):
     Returns a pd dataframe with clean strings
     """
     #load in data
-    fake_df = pd.read_csv(fake_df_path, usecols= ["text"])
-    true_df = pd.read_csv(true_df_path, usecols= ["text"])
+    fake_df = pd.read_csv(fake_df_path, usecols= [attribute_to_use])
+    true_df = pd.read_csv(true_df_path, usecols= [attribute_to_use])
 
     #add labels
     fake_df['target'] = 0
     true_df['target'] = 1
 
     #remove newspaper source (Reuters) from the "true" articles before merging
-    true_df['text'] = true_df['text'].replace(r'\A.*\(Reuters\)', '', regex=True) 
+    if attribute_to_use == 'text':
+        true_df[attribute_to_use] = true_df[attribute_to_use].replace(r'\A.*\(Reuters\)', '', regex=True) 
+    # i.e. if we are using titles
+    else:
+        true_df[attribute_to_use] = true_df[attribute_to_use].replace(r'Reuters', ' ', regex=True)
 
     # Merge fake and true articles into one dataset 
     data = true_df.append(fake_df).sample(frac=1).reset_index().drop(columns=['index'])
 
-    #remove all punctuation & single letters
-    data['text'] = data['text'].replace(r'[^\w\s]', ' ', regex=True).str.lower()
-    data['text'] = data['text'].replace(r'\s\w\s', ' ', regex=True)
+    if not bert:
+        #remove all punctuation, single letters, and digits
+        data[attribute_to_use] = data[attribute_to_use].replace(r'[^\w\s]', ' ', regex=True).str.lower()
+        data[attribute_to_use] = data[attribute_to_use].replace(r'\s\w\s', ' ', regex=True)
+        data[attribute_to_use] = data[attribute_to_use].replace(r'\d+\w*', ' ', regex=True)
 
-    #remove stop words
-    data['text'] = data["text"].apply(lambda words: ' '.join\
+        #remove stop words
+        data[attribute_to_use] = data[attribute_to_use].apply(lambda words: ' '.join\
                     (word for word in words.split() if word not in stop))
-
+    
     return data
 
 
