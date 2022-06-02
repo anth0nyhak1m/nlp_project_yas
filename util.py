@@ -13,6 +13,8 @@ from nltk.stem.snowball import EnglishStemmer
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
+#for tf/idf
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 def cleaning_data(true_df_path, fake_df_path, attribute_to_use, bert = True):
     """
@@ -84,3 +86,23 @@ def wordcloud(series_of_strings, max_words):
     plt.imshow(word_cloud, interpolation='bilinear')
     plt.axis("off")
     plt.show()
+
+
+def tf_idf_vectorizer(train_attribute, val_attribute, test_attribute, max_features): 
+    """vectorize training, validation, and testing data. Produce TF-IDF vectors for each subset"""
+
+    # Note, ngrams = 1, which is the default value if not specified in TfidfVectorizer. 
+    text_transformer = TfidfVectorizer(stop_words='english', max_features = max_features)
+
+    # fit_transform() method learns vocabulary and `IDF` used for both training & test data. 
+    # Returns document-term matrix with calculated `TF-IDF` values.
+    X_train_text = text_transformer.fit_transform(train_attribute)
+
+    # transform() method uses the vocabulary and document frequencies (df) learned by fit_transform(). 
+    # Returns document-term matrix with calculated `TF-IDF` values.
+    X_val_text = text_transformer.transform(val_attribute)
+    X_test_text = text_transformer.transform(test_attribute)
+
+    return text_transformer, X_train_text, X_val_text, X_test_text
+
+    
