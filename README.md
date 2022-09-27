@@ -19,6 +19,8 @@ with lower accuracy.
 * **util.py**: file of helper functions to preprocess data.
 * **final_presentation**: final presentation of results.
 
-## Data Visualization
+## Data Visualization:
 ![image](https://user-images.githubusercontent.com/36241004/192418924-b4464c23-090a-4929-b3b0-668176a6f528.png)
 
+## Data Source:
+https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset?select=True.csv
